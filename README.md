@@ -117,6 +117,7 @@ As dependências do projeto podem ser instaladas via o arquivo `requirements.txt
 ```bash
     mysql-connector-python==8.0.33
     python-dotenv==1.0.0
+    tabulate==0.9.0
 ```
 
 Instale as dependências com:
