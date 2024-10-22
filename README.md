@@ -33,12 +33,6 @@ Antes de rodar o projeto, você precisará instalar:
         python -m ensurepip --upgrade
     ```
 
-4. **Instalar Dependências Python**
-
-    Execute o seguinte comando para instalar as bibliotecas Python necessárias:
-    ```bash
-        pip install -r requirements.txt
-
 ## Configuração do Projeto
 
 1. **Clone o Repositório**
@@ -48,7 +42,13 @@ Antes de rodar o projeto, você precisará instalar:
     cd GestorDeConsultasMedicas
 ```
 
-2. **Configuração de Banco de Dados**
+2. **Instalar Dependências Python**
+
+    Execute o seguinte comando para instalar as bibliotecas Python necessárias:
+    ```bash
+        pip install -r requirements.txt
+
+3. **Configuração de Banco de Dados**
 
     1. Crie um banco de dados `MySQL`:
 
@@ -56,10 +56,38 @@ Antes de rodar o projeto, você precisará instalar:
         CREATE DATABASE consultas_medicas;
     ```
 
-    2. Importe o script `SQL` para criar as tabelas:
+    2. Use o comando `SQL` para criar as tabelas:
 
-    ```bash
-        mysql -u root -p consultas_medicas < sql/create_tables_script.sql
+    ```sql
+    
+        USE consultas_medicas;
+
+        CREATE TABLE Medico (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            especialidade VARCHAR(255) NOT NULL,
+            telefone VARCHAR(20)
+        );
+        
+        CREATE TABLE Paciente (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            data_nascimento DATE,
+            telefone VARCHAR(20)
+        );
+        
+        CREATE TABLE Consulta (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            medico_id INT,
+            paciente_id INT,
+            data_consulta DATE,
+            hora_consulta TIME,
+            status VARCHAR(50),
+            FOREIGN KEY (medico_id) REFERENCES Medico (id),
+            FOREIGN KEY (paciente_id) REFERENCES Paciente (id)
+        );
+
+
     ```
 
 3. **Configurar Variáveis de Ambiente**
@@ -87,8 +115,8 @@ As dependências do projeto podem ser instaladas via o arquivo `requirements.txt
 # `requirements.txt`
 
 ```bash
-    mysql-connector-python==8.0.x
-    python-dotenv==1.0.x
+    mysql-connector-python==8.0.33
+    python-dotenv==1.0.0
 ```
 
 Instale as dependências com:
