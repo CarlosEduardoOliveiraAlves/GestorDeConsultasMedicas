@@ -1,4 +1,5 @@
 from model.medico import Medico
+from tabulate import tabulate
 
 class MedicoController:
     def __init__(self, cursor, conn):
@@ -49,11 +50,16 @@ class MedicoController:
         except Exception as e:
             print(f"Erro ao atualizar médico: {e}")
 
-    def listar_medicos(self):
+    def listar_medicos(self, return_data=False):
         try:
             self.cursor.execute("SELECT * FROM Medico")
             medicos = self.cursor.fetchall()
+            
+            if return_data:
+                return medicos  # Retorna os dados se solicitado
+            
             for medico in medicos:
                 print(f"ID: {medico[0]}, Nome: {medico[1]}, Especialidade: {medico[2]}, Telefone: {medico[3]}")
         except Exception as e:
             print(f"Erro ao listar médicos: {e}")
+

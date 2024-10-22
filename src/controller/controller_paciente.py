@@ -49,10 +49,14 @@ class PacienteController:
         except Exception as e:
             print(f"Erro ao atualizar paciente: {e}")
 
-    def listar_pacientes(self):
+    def listar_pacientes(self, return_data=False):
         try:
             self.cursor.execute("SELECT * FROM Paciente")
             pacientes = self.cursor.fetchall()
+
+            if return_data:
+                return pacientes
+
             for paciente in pacientes:
                 print(f"ID: {paciente[0]}, Nome: {paciente[1]}, Data de Nascimento: {paciente[2]}, Telefone: {paciente[3]}")
         except Exception as e:

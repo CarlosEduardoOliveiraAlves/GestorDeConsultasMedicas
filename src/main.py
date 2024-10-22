@@ -4,6 +4,7 @@ from controller.controller_consulta import ConsultaController
 import os
 from dotenv import load_dotenv
 import mysql.connector
+from tabulate import tabulate
 
 def main():
     # Carrega as variáveis de ambiente do arquivo .env
@@ -47,20 +48,19 @@ def main():
         elif choice == '6':
             break
         else:
-            print("Opção inválida.")
+            print("Opção inválida. Por favor, tente novamente.")
 
     conn.close()
 
 def gerar_relatorios(consulta_controller):
     print("\n--- Relatórios ---")
     print("1. Consultas por médico")
-    print("2. Consultas por especialidade")
     choice = input("Escolha um relatório: ")
-    
+
     if choice == '1':
         consulta_controller.listar_consultas()
-    elif choice == '2':
-        consulta_controller.listar_consultas_por_especialidade()
+    else:
+        print("Opção inválida. Por favor, tente novamente.")
 
 def inserir_registros(medico_controller, paciente_controller, consulta_controller):
     print("\n--- Inserir Registros ---")
@@ -82,12 +82,14 @@ def inserir_registros(medico_controller, paciente_controller, consulta_controlle
         paciente_controller.inserir_paciente(nome, data_nascimento, telefone)
     
     elif choice == '3':
-        medico_id = int(input("ID do Médico: "))
-        paciente_id = int(input("ID do Paciente: "))
+        medico_id = input("ID do Médico: ")
+        paciente_id = input("ID do Paciente: ")
         data_consulta = input("Data da Consulta (YYYY-MM-DD): ")
         hora_consulta = input("Hora da Consulta (HH:MM): ")
         status = input("Status da Consulta: ")
         consulta_controller.inserir_consulta(medico_id, paciente_id, data_consulta, hora_consulta, status)
+    else:
+        print("Opção inválida. Por favor, tente novamente.")
 
 def remover_registros(medico_controller, paciente_controller, consulta_controller):
     print("\n--- Remover Registros ---")
@@ -97,16 +99,38 @@ def remover_registros(medico_controller, paciente_controller, consulta_controlle
     choice = input("Escolha uma opção: ")
 
     if choice == '1':
-        medico_id = int(input("ID do Médico a ser removido: "))
+        print("\n--- Lista de Médicos ---")
+        medicos = medico_controller.listar_medicos(return_data=True)
+        
+        if medicos:
+            print(tabulate(medicos, headers=["ID", "Nome", "Especialidade", "Telefone"]))
+
+        medico_id = input("ID do Médico a ser removido: ")
         medico_controller.remover_medico(medico_id)
     
     elif choice == '2':
-        paciente_id = int(input("ID do Paciente a ser removido: "))
+        # Listar pacientes como tabela antes da atualização
+        print("\n--- Lista de Pacientes ---")
+        pacientes = paciente_controller.listar_pacientes(return_data=True)
+
+        if pacientes:
+            print(tabulate(pacientes, headers=["ID", "Nome", "Data de Nascimento", "Telefone"]))
+
+        paciente_id = input("ID do Paciente a ser removido: ")
         paciente_controller.remover_paciente(paciente_id)
     
     elif choice == '3':
-        consulta_id = int(input("ID da Consulta a ser removida: "))
+        # Listar consultas como tabela antes da atualização
+        print("\n--- Lista de Consultas ---")
+        consultas = consulta_controller.listar_consultas(return_data=True)
+        
+        if consultas:
+            print(tabulate(consultas, headers=["ID", "Médico ID", "Paciente ID", "Data", "Hora", "Status"]))
+
+        consulta_id = input("ID da Consulta a ser removida: ")
         consulta_controller.remover_consulta(consulta_id)
+    else:
+        print("Opção inválida. Por favor, tente novamente.")
 
 def atualizar_registros(medico_controller, paciente_controller, consulta_controller):
     print("\n--- Atualizar Registros ---")
@@ -116,13 +140,26 @@ def atualizar_registros(medico_controller, paciente_controller, consulta_control
     choice = input("Escolha uma opção: ")
 
     if choice == '1':
-        medico_id = int(input("ID do Médico a ser atualizado: "))
+        print("\n--- Lista de Médicos ---")
+        medicos = medico_controller.listar_medicos(return_data=True)
+        
+        if medicos:
+            print(tabulate(medicos, headers=["ID", "Nome", "Especialidade", "Telefone"]))
+        
+        medico_id = input("ID do Médico a ser atualizado: ")
         nome = input("Novo nome (ou pressione Enter para manter o atual): ")
         especialidade = input("Nova especialidade (ou pressione Enter para manter a atual): ")
         telefone = input("Novo telefone (ou pressione Enter para manter o atual): ")
         medico_controller.atualizar_medico(medico_id, nome, especialidade, telefone)
     
     elif choice == '2':
+        # Listar pacientes como tabela antes da atualização
+        print("\n--- Lista de Pacientes ---")
+        pacientes = paciente_controller.listar_pacientes(return_data=True)
+
+        if pacientes:
+            print(tabulate(pacientes, headers=["ID", "Nome", "Data de Nascimento", "Telefone"]))
+        
         paciente_id = int(input("ID do Paciente a ser atualizado: "))
         nome = input("Novo nome (ou pressione Enter para manter o atual): ")
         data_nascimento = input("Nova data de nascimento (YYYY-MM-DD) (ou Enter para manter a atual): ")
@@ -130,6 +167,13 @@ def atualizar_registros(medico_controller, paciente_controller, consulta_control
         paciente_controller.atualizar_paciente(paciente_id, nome, data_nascimento, telefone)
     
     elif choice == '3':
+        # Listar consultas como tabela antes da atualização
+        print("\n--- Lista de Consultas ---")
+        consultas = consulta_controller.listar_consultas(return_data=True)
+        
+        if consultas:
+            print(tabulate(consultas, headers=["ID", "Médico ID", "Paciente ID", "Data", "Hora", "Status"]))
+        
         consulta_id = int(input("ID da Consulta a ser atualizada: "))
         data_consulta = input("Nova data (YYYY-MM-DD) (ou Enter para manter a atual): ")
         hora_consulta = input("Nova hora (HH:MM) (ou Enter para manter a atual): ")
@@ -144,13 +188,29 @@ def listar_registros(medico_controller, paciente_controller, consulta_controller
     choice = input("Escolha uma opção: ")
 
     if choice == '1':
-        medico_controller.listar_medicos()
+        print("\n--- Lista de Médicos ---")
+        medicos = medico_controller.listar_medicos(return_data=True)
+        
+        if medicos:
+            print(tabulate(medicos, headers=["ID", "Nome", "Especialidade", "Telefone"]))
     
     elif choice == '2':
-        paciente_controller.listar_pacientes()
+        # Listar pacientes como tabela antes da atualização
+        print("\n--- Lista de Pacientes ---")
+        pacientes = paciente_controller.listar_pacientes(return_data=True)
+
+        if pacientes:
+            print(tabulate(pacientes, headers=["ID", "Nome", "Data de Nascimento", "Telefone"]))
     
     elif choice == '3':
-        consulta_controller.listar_consultas()
+        # Listar consultas como tabela antes da atualização
+        print("\n--- Lista de Consultas ---")
+        consultas = consulta_controller.listar_consultas(return_data=True)
+        
+        if consultas:
+            print(tabulate(consultas, headers=["ID", "Médico ID", "Paciente ID", "Data", "Hora", "Status"]))
+    else:
+        print("Opção inválida. Por favor, tente novamente.")
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,5 @@
 from model.consulta import Consulta
+from tabulate import tabulate
 
 class ConsultaController:
     def __init__(self, cursor, conn):
@@ -49,7 +50,7 @@ class ConsultaController:
         except Exception as e:
             print(f"Erro ao atualizar consulta: {e}")
 
-    def listar_consultas(self):
+    def listar_consultas(self, return_data=False):
         try:
             self.cursor.execute('''
                 SELECT Consulta.id, Medico.nome, Paciente.nome, Consulta.data_consulta, Consulta.hora_consulta, Consulta.status
@@ -59,7 +60,13 @@ class ConsultaController:
             ''')
             consultas = self.cursor.fetchall()
 
+            if return_data:
+                return consultas
+            
             for consulta in consultas:
-                print(f"ID da Consulta: {consulta[0]}, Médico: {consulta[1]}, Paciente: {consulta[2]}, Data: {consulta[3]}, Hora: {consulta[4]}, Status: {consulta[5]}")
+                print(f"ID: {consulta[0]}, Médico: {consulta[1]}, Paciente: {consulta[2]}, Data: {consulta[3]}, Hora: {consulta[4]}, Status: {consulta[5]}")
+
+            headers = ["ID", "Médico", "Paciente", "Data", "Hora", "Status"]
+            print(tabulate(consultas, headers, tablefmt="grid"))
         except Exception as e:
             print(f"Erro ao listar consultas: {e}")
