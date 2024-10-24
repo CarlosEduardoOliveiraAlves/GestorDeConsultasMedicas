@@ -26,6 +26,7 @@ def main():
     consulta_controller = ConsultaController(cursor, conn)
 
     while True:
+        print("\n----- Integrantes: Carlos Eduardo, João Marcos, Lucas Sarmento, Matheus Bezerra, Miercio M Guimarães -----")
         print("\n----- Sistema de Controle de Consultas Médicas -----")
         print("1. Relatórios")
         print("2. Inserir registros")
@@ -82,7 +83,17 @@ def inserir_registros(medico_controller, paciente_controller, consulta_controlle
         paciente_controller.inserir_paciente(nome, data_nascimento, telefone)
     
     elif choice == '3':
+        print("\n--- Lista de Médicos ---")
+        medicos = medico_controller.listar_medicos(return_data=True)
+        
+        if medicos:
+            print(tabulate(medicos, headers=["ID", "Nome", "Especialidade", "Telefone"]))
         medico_id = input("ID do Médico: ")
+        print("\n--- Lista de Pacientes ---")
+        pacientes = paciente_controller.listar_pacientes(return_data=True)
+
+        if pacientes:
+            print(tabulate(pacientes, headers=["ID", "Nome", "Data de Nascimento", "Telefone"]))
         paciente_id = input("ID do Paciente: ")
         data_consulta = input("Data da Consulta (YYYY-MM-DD): ")
         hora_consulta = input("Hora da Consulta (HH:MM): ")
